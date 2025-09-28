@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>PDF Sayfa & Kelime Sayacı</title>
+  <script src="lib/xlsx.full.min.js"></script>
+  <script src="lib/pdf.worker.min.js"></script>
+  <script src="lib/pdf.min.js"></script>
+  <script src="popup.js" defer></script>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      padding: 10px;
+      font-size: 11px;
+      background: #f4f7fa;
+      color: #333;
+      width: 330px;
+      height: 450px;
+    }
+
+    body.light { background: #f4f7fa; color: #333; }
+    body.dark { background: #1e1e1e; color: #ddd; }
+
+    body.dark th { background-color: #333; color: #eee; }
+    body.dark td { background-color: #2b2b2b; color: #ddd; }
+    body.dark input, body.dark button, body.dark textarea {
+      background-color: #444;
+      color: white;
+      border: 1px solid #555;
+    }
+
+    button {
+      padding: 6px 12px;
+      font-size: 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background-color: #c7ddd9;
+      margin-top: 5px;
+      margin-right: 5px;
+      user-select: none;
+    }
+    button:hover:not(:disabled) {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+      transform: none;
+      opacity: 0.6;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 5px;
+      flex-wrap: wrap;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    th {
+      background-color: #004080;
+      color: white;
+      font-weight: normal;
+      padding: 5px 8px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    td {
+      background-color: #fdfdfd;
+      padding: 5px 8px;
+      border: 1px solid #ccc;
+      word-break: break-all;
+    }
+
+    #pasteArea {
+      width: 100%;
+      height: 180px;
+      resize: none;
+      box-sizing: border-box;
+      margin-bottom: 5px;
+      overflow-x: auto;   
+      overflow-y: auto;   
+      white-space: pre;
+    }
+
+    #resultsTable tbody tr:nth-child(odd) td {
+      background-color: #eef4f7;
+    }
+
+    #resultsContainer {
+      flex-grow: 1;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      border-radius: 4px;;
+      background: white;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-buttons" style="display: flex; justify-content: flex-end;">
+    <button id="langSwitch" class="i18n" data-msg="langSwitch" title="Dili Değiştir">🌐 EN</button>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <img src="images/logo_2.png" alt="Logo" style="height: 40px;">
+    <h1 class="i18n"data-msg="title" style="margin: 5px 0 3px 0; text-align: center;">PDF Sayfa & Kelime Sayacı</h1>
+  </div>
+  
+
+  <textarea id="pasteArea" placeholder="Excel'den PDF URL'lerini buraya yapıştırın..." data-msg-placeholder="pastePlaceholder"></textarea>
+
+  <div class="button-row">
+    <button id="analyzeButton" disabled class="i18n" data-msg="analyze">📊 Analiz Et</button>
+    <button id="downloadButton" disabled class="i18n" data-msg="download">⬇️ Excel İndir</button>
+    <button id="clearButton" disabled class="i18n" data-msg="clear">🧹 Temizle</button>
+  </div>
+  <div id="resultsInfo" data-msg-dynamic="counter" style="margin-top: 25px; font-weight: bold;"></div>
+  <div id="resultsContainer" class="table-container" style="overflow-y: auto; max-height: 280px; display: none;">
+    
+    <table id="resultsTable">
+      <thead>
+        <tr>
+          <th class="i18n" data-msg="url">PDF URL</th>
+          <th class="i18n" data-msg="pages">Sayfa Sayısı</th>
+          <th class="i18n" data-msg="words">Kelime Sayısı</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</body>
+</html>
